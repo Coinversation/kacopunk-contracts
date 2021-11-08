@@ -22,12 +22,12 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
  * roles, as well as the default admin role, which will let it grant both minter
  * and pauser roles to other accounts.
  */
-contract Kasiar is
+contract Karsiar is
      ERC721Enumerable, Ownable
  {
     uint256 public price = 50000000000000000; // 0.05 
     uint256 public maxPurchase = 10;
-    uint256 public MAX_Kasiar = 3000;
+    uint256 public MAX_Karsiar = 3000;
     string private _baseTokenURI;
     // 0 = paused, 1 = presale, 2 = live
     uint256 public saleState = 0; 
@@ -35,16 +35,16 @@ contract Kasiar is
 
     // Rarity
     // 0 <= _tokenIdTrackerSSS < 2  2
-    uint256 public SSS = 2;
+    uint256 public constant SSS = 2;
     uint256 private _tokenIdTrackerSSS;
     // 2 <= _tokenIdTrackerSS < 18   16
-    uint256 public SS = 16;
+    uint256 public constant SS = 16;
     uint256 private _tokenIdTrackerSS = 2;
     // 18 <= _tokenIdTrackerSS < 82  64
-    uint256 public S = 64;
+    uint256 public constant S = 64;
     uint256 private _tokenIdTrackerS = SSS+SS;
     // 82 <= _tokenIdTrackerSS < 3000  2918
-    uint256 public A = 2918;
+    uint256 public constant A = 2918;
     uint256 private _tokenIdTrackerA = SSS+SS+ S;
 
 
@@ -75,18 +75,15 @@ contract Kasiar is
             preSaleReserved[_a[i]] = maxPurchase;
         }
     }
-    function preSaleMint(address to, uint256 num) public payable {
+    function preSaleMint(address to) public payable {
         uint256 supply = totalSupply();
         uint256 reservedAmt = preSaleReserved[to];
         require(saleState > 0, "Presale isn't active");
         require(reservedAmt > 0, "No tokens reserved for address");
-        require(num <= reservedAmt, "Can't mint more than reserved");
-        require(supply + num <= MAX_Kasiar, "Exceeds maximum Kasiar supply");
-        require(msg.value >= price * num, "Ether sent is not correct");
-        preSaleReserved[to] = reservedAmt - num;
-        for (uint256 i; i < num; i++) {
-           _mindRandom(to);
-        }
+        require(supply + 1 <= MAX_Karsiar, "Exceeds maximum Karsiar supply");
+        require(msg.value >= price, "Ether sent is not correct");
+        preSaleReserved[to] = reservedAmt - 1;
+        _mindRandom(to);
     }
     
     /**
@@ -106,12 +103,12 @@ contract Kasiar is
       require(to != address(0x0), "address err");
       require(
           num <= maxPurchase,
-          "Exceeds max number of Kasiar in one transaction"
+          "Exceeds max number of Karsiar in one transaction"
       );
       uint256 supply = totalSupply();
       require(
-          supply + num <= MAX_Kasiar,
-          "Purchase would exceed max supply of Kasiar"
+          supply + num <= MAX_Karsiar,
+          "Purchase would exceed max supply of Karsiar"
       );
       require(price * num <= msg.value, "Ether value sent is not correct");
         
@@ -126,19 +123,25 @@ contract Kasiar is
     function _mindRandom(address to) private {
         uint256  _r = _random();
         uint256  _mintId;
-        if(0<=_r && _r<SSS && _tokenIdTrackerSSS<SSS){
+        
+        uint256 _SSS = SSS;
+        uint256 _SS = SS;
+        uint256 _S = S;
+        uint256 _A = A;
+
+        if(0<=_r && _r< _SSS && _tokenIdTrackerSSS<_SSS){
             _mintId = _tokenIdTrackerSSS;
-            _tokenIdTrackerSSS += _tokenIdTrackerSSS;
-        } else if(0<=_r&& _r<SSS+SS && _tokenIdTrackerSS<SS){
+            _tokenIdTrackerSSS += 1;
+        } else if(0<=_r&& _r<_SSS+_SS && _tokenIdTrackerSS<_SS){
             _mintId = _tokenIdTrackerSS;
             _tokenIdTrackerSS += 1;
-        } else if(0<=_r && _r<SSS+SS+S && _tokenIdTrackerS<S){
+        } else if(0<=_r && _r<_SSS+_SS+_S && _tokenIdTrackerS<_S){
             _mintId = _tokenIdTrackerS;
             _tokenIdTrackerS+=1;
         } else {
-            if(_tokenIdTrackerA >= A){
-                if(_tokenIdTrackerS>=S){
-                    if(_tokenIdTrackerSS>=SS){
+            if(_tokenIdTrackerA >= _A){
+                if(_tokenIdTrackerS>=_S){
+                    if(_tokenIdTrackerSS>=_SS){
                         _mintId = _tokenIdTrackerSSS;
                         _tokenIdTrackerSSS+=1;
                     } else {
@@ -167,7 +170,7 @@ contract Kasiar is
                        totalSupply()
                     )
                 )
-            ) % MAX_Kasiar;
+            ) % MAX_Karsiar;
     }
     function setSaleState(uint256 _saleState)   
         public
