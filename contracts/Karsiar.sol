@@ -26,8 +26,8 @@ contract Karsiar is
      ERC721Enumerable, Ownable
  {
     uint256 public price = 50000000000000000; // 0.05 
-    uint256 public maxPurchase = 10;
-    uint256 public MAX_Karsiar = 3000;
+    uint256 public constant maxPurchase = 100;
+    uint256 public constant MAX_Karsiar = 3000;
     string private _baseTokenURI;
     // 0 = paused, 1 = presale, 2 = live
     uint256 public saleState = 0; 
@@ -196,15 +196,6 @@ contract Karsiar is
     {
         require(_price > 0, "Zero price");
         price = _price;
-    }
-
-    function setMaxPurchase(uint256 _value)   
-        public
-        virtual
-        onlyOwner 
-    {
-        require(_value > 0, "Very low value");
-        maxPurchase = _value;
     }
 
     function withdraw() public payable onlyOwner  {
