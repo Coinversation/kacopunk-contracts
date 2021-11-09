@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 
 /**
  * @dev {ERC721} token, including:
@@ -25,6 +26,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 contract Karsiar is
      ERC721Enumerable, Ownable
  {
+    using Strings for uint256;
     uint256 public price = 50000000000000000; // 0.05 
     uint256 public constant maxPurchase = 100;
     uint256 public constant MAX_Karsiar = 3000;
@@ -222,5 +224,16 @@ contract Karsiar is
     {
         uint256 tokensId = tokenOfOwnerByIndex(_owner, index);
         return tokensId;
+    }
+    function tokenURI(uint256 _tokenId)
+        public
+        view
+        virtual
+        override
+        returns (string memory)
+    {
+        require(_exists(_tokenId), "ERC721Metadata: URI query for nonexistent token");
+
+        return bytes(_baseTokenURI).length > 0 ? string(abi.encodePacked(_baseTokenURI, _tokenId.toString(),".json" )): "";
     }
 }
