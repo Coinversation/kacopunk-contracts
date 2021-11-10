@@ -23,13 +23,13 @@ import "@openzeppelin/contracts/utils/Strings.sol";
  * roles, as well as the default admin role, which will let it grant both minter
  * and pauser roles to other accounts.
  */
-contract Karsiar is
+contract Karsier is
      ERC721Enumerable, Ownable
  {
     using Strings for uint256;
     uint256 public price = 50000000000000000; // 0.05 
     uint256 public constant maxPurchase = 100;
-    uint256 public constant MAX_Karsiar = 3000;
+    uint256 public constant MAX_Karsier = 3000;
     string private _baseTokenURI;
     // 0 = paused, 1 = presale, 2 = live
     uint256 public saleState = 0; 
@@ -82,7 +82,7 @@ contract Karsiar is
         uint256 reservedAmt = preSaleReserved[to];
         require(saleState > 0, "Presale isn't active");
         require(reservedAmt > 0, "No tokens reserved for address");
-        require(supply + 1 <= MAX_Karsiar, "Exceeds maximum Karsiar supply");
+        require(supply + 1 <= MAX_Karsier, "Exceeds maximum Karsier supply");
         require(msg.value >= price, "Ether sent is not correct");
         preSaleReserved[to] = reservedAmt - 1;
         _mindRandom(to);
@@ -105,12 +105,12 @@ contract Karsiar is
       require(to != address(0x0), "address err");
       require(
           num <= maxPurchase,
-          "Exceeds max number of Karsiar in one transaction"
+          "Exceeds max number of Karsier in one transaction"
       );
       uint256 supply = totalSupply();
       require(
-          supply + num <= MAX_Karsiar,
-          "Purchase would exceed max supply of Karsiar"
+          supply + num <= MAX_Karsier,
+          "Purchase would exceed max supply of Karsier"
       );
       require(price * num <= msg.value, "Ether value sent is not correct");
         
@@ -172,7 +172,7 @@ contract Karsiar is
                        totalSupply()
                     )
                 )
-            ) % MAX_Karsiar;
+            ) % MAX_Karsier;
     }
     function setSaleState(uint256 _saleState)   
         public

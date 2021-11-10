@@ -19,16 +19,64 @@ const images = require("images");
 const fs = require("fs");
 const path = require("path");
 
-const Backgrounds = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
-const Caps = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"];
-const Clothes = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"];
-const Glasses = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"];
+const Backgrounds = [
+  "Blue Ink Color",
+  "Red Ink Color",
+  "Green Thread",
+  "Hazy Night",
+  "Purple Aurora",
+  "Purple Ripples",
+  "Green Ripple",
+  "Water Emulsion",
+  "Yellow Aurora",
+  "Cyan Aurora",
+];
+
+const Caps = [
+  "Blue Light",
+  "Knit Cap",
+  "Searchlights",
+  "Boy Scout",
+  "Color Strip",
+  "NEON light",
+  "Pumpkins",
+  "Pussycat",
+  "Swimming Cap",
+  "Waves",
+  "Yellow Strip",
+];
+const Clothes = [
+  "Cardigan-Dark Color",
+  "Cardigan-Sparkly",
+  "Artist",
+  "Bathing Ring",
+  "Blue Coat",
+  "Flowered Dress",
+  "Green Sweater",
+  "Leisure",
+  "Miners",
+  "Musician",
+  "Purple Sweater",
+];
+const Glasses = [
+  "Miner’s Glasses",
+  "Swimming Goggles",
+  "Blotchy",
+  "Fire Rod",
+  "Flash",
+  "Green Color",
+  "Green Light",
+  "Pastels",
+  "Pixelation",
+  "Purple Color",
+  "Yellow Light",
+];
 // const Backgrounds = ["1", "2", "3"];
 // const Caps = ["1", "2"];
 // const Clothes = ["1", "2"];
 // const Glasses = ["1", "2"];
-const Header = ["1"];
-const arr = [Backgrounds, Header, Glasses, Caps, Clothes];
+const Header = ["Header"];
+const arr = [Backgrounds, Clothes, Header, Caps, Glasses];
 const types = [
   {
     hint: "背景",
@@ -37,10 +85,10 @@ const types = [
     x: 0,
     y: 0,
   },
-  { hint: "头轮廓", type: "Header", value: Header, x: 400, y: 0 },
-  { hint: "眼镜", type: "Glasses", value: Glasses, x: 400, y: 0 },
-  { hint: "帽子", type: "Caps", value: Caps, x: 400, y: 0 },
   { hint: "衣服", type: "Clothes", value: Clothes, x: 400, y: 0 },
+  { hint: "头轮廓", type: "Header", value: Header, x: 400, y: 0 },
+  { hint: "帽子", type: "Caps", value: Caps, x: 400, y: 0 },
+  { hint: "眼镜", type: "Glasses", value: Glasses, x: 400, y: 0 },
 ];
 // img file
 const inputPath = path.resolve(__dirname, "../img/");
@@ -57,9 +105,9 @@ const outputPath = path.resolve(__dirname, "../karsier/image/");
 const SS = 2 + 16;
 const S = 2 + 16 + 64;
 const A = 2 + 16 + 64 + 2918;
+
 let k = 1;
 function run() {
-  console.log("Robot Mask Start ...");
   let results: any = [];
   let result: any = [];
   function doExchange(arr: any, depth: any) {
@@ -74,8 +122,6 @@ function run() {
   }
   doExchange(arr, 0);
 
-  console.log("results.length", results);
-
   // wirte result to file
   fs.writeFile(
     path.resolve(__dirname, "../db/results.json"),
@@ -86,33 +132,54 @@ function run() {
       }
     }
   );
-
+  let resultsArr = [];
+  let a = 0;
+  let b = 4000;
+  let c = 8000;
+  for (let j = 1; j <= results.length; j++) {
+    let i = j - 1;
+    let instance = results[i].split("|");
+    let instanceNum = [
+      Backgrounds.indexOf(instance[0]) + 1,
+      Clothes.indexOf(instance[1]) + 1,
+      Caps.indexOf(instance[3]) + 1,
+      Glasses.indexOf(instance[4]) + 1,
+    ];
+    if (instanceNum.filter((v: number) => v > 2).length === 0) {
+      resultsArr.push({
+        key: a,
+        value: results[i],
+      });
+      a++;
+    } else if (
+      instanceNum.slice(1, 4).filter((v: number) => v < 3).length === 3
+    ) {
+      resultsArr.push({
+        key: b,
+        value: results[i],
+      });
+      b++;
+    } else if (instanceNum.filter((v: number) => v < 3).length === 0) {
+      resultsArr.push({
+        key: c,
+        value: results[i],
+      });
+      c++;
+    }
+  }
+  const resultsArrS = resultsArr.sort((a, b) => a.key - b.key);
+  console.log(resultsArrS);
   // compare img
   let db: any = {};
-  for (let j = 1; j <= results.length; j++) {
+  for (let j = 1; j < 3000; j++) {
     k++;
     let i = j - 1;
     let attributes: any = [];
-    let instance = results[i].split("|");
-    if (k < SS) {
-      if (instance.filter((v: string) => Number(v) > 2).length > 0) {
-        continue;
-      }
-    } else if (k < S) {
-      if (instance.filter((v: string) => Number(v) < 3).length != 3) {
-        continue;
-      }
-    } else {
-      if (k < A) {
-        break;
-      }
-    }
+    let instance = resultsArr[i]["value"].split("|");
     // i. 0 <= k < 2  稀有性 SSS
     // ii. 2 <= k < 2+16  稀有性 SS  2^4
     // iii. 2+16 <= k < 2+16+64  稀有性 S   2^3*8
     // iiii. 2+16+64 <= k < 2+16+64+2918  稀有性 S   2^3*8
-    console.log("k:", k);
-    console.log("instance:", instance);
     let robatInstance = images(
       `${inputPath}/${types[0].type}/${instance[0]}.png`
     )
@@ -140,8 +207,9 @@ function run() {
       }
     }
     db[k] = {
-      name: `Kasiar #${k}`,
-      description: "Kasiar",
+      name: `Karsier #${k}`,
+      description:
+        "Karsier came to the blockchain world to create some fun for us.",
       image: `https://karsier.kaco.finance/karsier/image/${k}.png`,
       attributes: attributes,
     };
@@ -152,10 +220,8 @@ function run() {
         if (err) {
           throw err;
         }
-        console.log("File writing succeeded");
       }
     );
-    // console.log("Genetic information：", db[k]);
     robatInstance = undefined;
   }
   fs.writeFile(
@@ -165,7 +231,6 @@ function run() {
       if (err) {
         throw err;
       }
-      console.log("File writing succeeded");
     }
   );
 }
