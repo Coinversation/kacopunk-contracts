@@ -106,7 +106,7 @@ const SS = 2 + 16;
 const S = 2 + 16 + 64;
 const A = 2 + 16 + 64 + 2918;
 
-let k = 1;
+let kk = 1;
 function run() {
   let results: any = [];
   let result: any = [];
@@ -123,15 +123,7 @@ function run() {
   doExchange(arr, 0);
 
   // wirte result to file
-  fs.writeFile(
-    path.resolve(__dirname, "../db/results.json"),
-    JSON.stringify(results),
-    function (err: any) {
-      if (err) {
-        throw err;
-      }
-    }
-  );
+
   let resultsArr = [];
   let a = 0;
   let b = 4000;
@@ -168,11 +160,21 @@ function run() {
     }
   }
   const resultsArrS = resultsArr.sort((a, b) => a.key - b.key);
-  console.log(resultsArrS);
+
+  fs.writeFile(
+    path.resolve(__dirname, "../db/results.json"),
+    JSON.stringify(resultsArrS.map((v) => v.value).slice(0, 3000 - 2)),
+    function (err: any) {
+      if (err) {
+        throw err;
+      }
+    }
+  );
   // compare img
   let db: any = {};
-  for (let j = 1; j < 3000; j++) {
-    k++;
+  // 3000
+  for (let j = 1; j < resultsArr.length; j++) {
+    kk++;
     let i = j - 1;
     let attributes: any = [];
     let instance = resultsArr[i]["value"].split("|");
@@ -180,49 +182,54 @@ function run() {
     // ii. 2 <= k < 2+16  稀有性 SS  2^4
     // iii. 2+16 <= k < 2+16+64  稀有性 S   2^3*8
     // iiii. 2+16+64 <= k < 2+16+64+2918  稀有性 S   2^3*8
-    let robatInstance = images(
-      `${inputPath}/${types[0].type}/${instance[0]}.png`
-    )
-      .size(1600)
-      .draw(images(`${inputPath}/${types[1].type}/${instance[1]}.png`), 0, 0)
-      .draw(images(`${inputPath}/${types[2].type}/${instance[2]}.png`), 0, 0)
-      .draw(images(`${inputPath}/${types[3].type}/${instance[3]}.png`), 0, 0)
-      .draw(images(`${inputPath}/${types[4].type}/${instance[4]}.png`), 0, 0)
-      .save(`${outputPath}/${k}.png`, {
-        quality: 90,
-      });
-    for (let k = 0; k < types.length; k++) {
-      if (k === 0) {
-        attributes = [
-          {
+    if (kk >= 0 && kk < 1500) {
+      // if (kk >= 1000 && kk < 2000) {
+      // if (kk >= 2000 && kk < 3000) {
+      let robatInstance = images(
+        `${inputPath}/${types[0].type}/${instance[0]}.png`
+      )
+        .size(1600)
+        .draw(images(`${inputPath}/${types[1].type}/${instance[1]}.png`), 0, 0)
+        .draw(images(`${inputPath}/${types[2].type}/${instance[2]}.png`), 0, 0)
+        .draw(images(`${inputPath}/${types[3].type}/${instance[3]}.png`), 0, 0)
+        .draw(images(`${inputPath}/${types[4].type}/${instance[4]}.png`), 0, 0)
+        .save(`${outputPath}/${kk}.jpeg`, {
+          quality: 80,
+        });
+      for (let k = 0; k < types.length; k++) {
+        if (k === 0) {
+          attributes = [
+            {
+              trait_type: types[k].type,
+              value: instance[k],
+            },
+          ];
+        } else {
+          attributes.push({
             trait_type: types[k].type,
             value: instance[k],
-          },
-        ];
-      } else {
-        attributes.push({
-          trait_type: types[k].type,
-          value: instance[k],
-        });
-      }
-    }
-    db[k] = {
-      name: `Karsier #${k}`,
-      description:
-        "Karsier came to the blockchain world to create some fun for us.",
-      image: `https://karsier.kaco.finance/karsier/image/${k}.png`,
-      attributes: attributes,
-    };
-    fs.writeFile(
-      path.resolve(__dirname, `../karsier/${k}.json`),
-      JSON.stringify(db[k]),
-      function (err: any) {
-        if (err) {
-          throw err;
+          });
         }
       }
-    );
-    robatInstance = undefined;
+      db[kk] = {
+        name: `Karsier #${kk}`,
+        description:
+          "Karsier came to the blockchain world to create some fun for us.",
+        image: `https://karsier.kaco.finance/karsier/image/${kk}.jpeg`,
+        attributes: attributes,
+      };
+      fs.writeFile(
+        path.resolve(__dirname, `../karsier/${kk}.json`),
+        JSON.stringify(db[kk]),
+        function (err: any) {
+          if (err) {
+            throw err;
+          }
+        }
+      );
+      console.log(kk);
+      // robatInstance = undefined;
+    }
   }
   fs.writeFile(
     path.resolve(__dirname, "../db/config.json"),

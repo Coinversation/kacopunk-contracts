@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MIT
-// OpenZeppelin Contracts v4.3.2 (token/ERC721/presets/ERC721PresetMinterPauserAutoId.sol)
+// Karsier
+// KAS
+// https://karsier.kaco.finance/karsier/image/1.png
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
@@ -23,16 +25,14 @@ import "@openzeppelin/contracts/utils/Strings.sol";
  * roles, as well as the default admin role, which will let it grant both minter
  * and pauser roles to other accounts.
  */
-contract Karsier is
-     ERC721Enumerable, Ownable
- {
+contract Karsier is ERC721Enumerable, Ownable {
     using Strings for uint256;
-    uint256 public price = 50000000000000000; // 0.05 
+    uint256 public price = 50000000000000000; // 0.05
     uint256 public constant maxPurchase = 100;
     uint256 public constant MAX_Karsier = 3000;
     string private _baseTokenURI;
     // 0 = paused, 1 = presale, 2 = live
-    uint256 public saleState = 0; 
+    uint256 public saleState = 0;
     mapping(address => uint256) public preSaleReserved;
 
     // Rarity
@@ -44,12 +44,10 @@ contract Karsier is
     uint256 private _tokenIdTrackerSS = 2;
     // 18 <= _tokenIdTrackerSS < 82  64
     uint256 public constant S = 64;
-    uint256 private _tokenIdTrackerS = SSS+SS;
+    uint256 private _tokenIdTrackerS = SSS + SS;
     // 82 <= _tokenIdTrackerSS < 3000  2918
     uint256 public constant A = 2918;
-    uint256 private _tokenIdTrackerA = SSS+SS+ S;
-
-
+    uint256 private _tokenIdTrackerA = SSS + SS + S;
 
     /**
      * @dev Grants `DEFAULT_ADMIN_ROLE`, `MINTER_ROLE` and `ADMIN_ROLE` to the
@@ -68,15 +66,12 @@ contract Karsier is
     }
 
     // Edit reserved presale spots
-    function setPreSaleWhitelist(address[] memory _a)   
-        public
-        virtual
-        onlyOwner 
-    {
+    function setPreSaleWhitelist(address[] memory _a) public virtual onlyOwner {
         for (uint256 i; i < _a.length; i++) {
             preSaleReserved[_a[i]] = maxPurchase;
         }
     }
+
     function preSaleMint(address to) public payable {
         uint256 supply = totalSupply();
         uint256 reservedAmt = preSaleReserved[to];
@@ -87,7 +82,7 @@ contract Karsier is
         preSaleReserved[to] = reservedAmt - 1;
         _mindRandom(to);
     }
-    
+
     /**
      * @dev Creates a new token for `to`. Its token ID will be automatically
      * assigned (and available on the emitted {IERC721-Transfer} event), and the token
@@ -100,68 +95,67 @@ contract Karsier is
      * - the caller must have the `MINTER_ROLE`.
      */
     function mint(address to, uint256 num) public payable virtual {
-      require(saleState > 1, "Sale not live");
-      require(num > 0, "Cannot buy 0");
-      require(to != address(0x0), "address err");
-      require(
-          num <= maxPurchase,
-          "Exceeds max number of Karsier in one transaction"
-      );
-      uint256 supply = totalSupply();
-      require(
-          supply + num <= MAX_Karsier,
-          "Purchase would exceed max supply of Karsier"
-      );
-      require(price * num <= msg.value, "Ether value sent is not correct");
-        
+        require(saleState > 1, "Sale not live");
+        require(num > 0, "Cannot buy 0");
+        require(to != address(0x0), "address err");
+        require(
+            num <= maxPurchase,
+            "Exceeds max number of Karsier in one transaction"
+        );
+        uint256 supply = totalSupply();
+        require(
+            supply + num <= MAX_Karsier,
+            "Purchase would exceed max supply of Karsier"
+        );
+        require(price * num <= msg.value, "Ether value sent is not correct");
 
-      for (uint256 i; i < num; i++) {
-        // We cannot just use balanceOf to create the new tokenId because tokens
-        // can be burned (destroyed), so we need a separate counter.
-        _mindRandom(to);
-      }
+        for (uint256 i; i < num; i++) {
+            // We cannot just use balanceOf to create the new tokenId because tokens
+            // can be burned (destroyed), so we need a separate counter.
+            _mindRandom(to);
+        }
     }
 
     function _mindRandom(address to) private {
-        uint256  _r = _random();
-        uint256  _mintId;
-        
+        uint256 _r = _random();
+        uint256 _mintId;
+
         uint256 _SSS = SSS;
         uint256 _SS = SS;
         uint256 _S = S;
         uint256 _A = A;
 
-        if(0<=_r && _r< _SSS && _tokenIdTrackerSSS<_SSS){
+        if (0 <= _r && _r < _SSS && _tokenIdTrackerSSS < _SSS) {
             _mintId = _tokenIdTrackerSSS;
             _tokenIdTrackerSSS += 1;
-        } else if(0<=_r&& _r<_SSS+_SS && _tokenIdTrackerSS<_SS){
+        } else if (0 <= _r && _r < _SSS + _SS && _tokenIdTrackerSS < _SS) {
             _mintId = _tokenIdTrackerSS;
             _tokenIdTrackerSS += 1;
-        } else if(0<=_r && _r<_SSS+_SS+_S && _tokenIdTrackerS<_S){
+        } else if (0 <= _r && _r < _SSS + _SS + _S && _tokenIdTrackerS < _S) {
             _mintId = _tokenIdTrackerS;
-            _tokenIdTrackerS+=1;
+            _tokenIdTrackerS += 1;
         } else {
-            if(_tokenIdTrackerA >= _A){
-                if(_tokenIdTrackerS>=_S){
-                    if(_tokenIdTrackerSS>=_SS){
+            if (_tokenIdTrackerA >= _A) {
+                if (_tokenIdTrackerS >= _S) {
+                    if (_tokenIdTrackerSS >= _SS) {
                         _mintId = _tokenIdTrackerSSS;
-                        _tokenIdTrackerSSS+=1;
+                        _tokenIdTrackerSSS += 1;
                     } else {
                         _mintId = _tokenIdTrackerSS;
-                        _tokenIdTrackerSS+=1;
+                        _tokenIdTrackerSS += 1;
                     }
                 } else {
                     _mintId = _tokenIdTrackerS;
-                    _tokenIdTrackerS+=1;
+                    _tokenIdTrackerS += 1;
                 }
-            }else {
-                 _mintId = _tokenIdTrackerA;
-                _tokenIdTrackerA+=1;
+            } else {
+                _mintId = _tokenIdTrackerA;
+                _tokenIdTrackerA += 1;
             }
-            
         }
         _safeMint(to, _mintId);
     }
+
     function _random() private view returns (uint256) {
         return
             uint256(
@@ -169,40 +163,37 @@ contract Karsier is
                     abi.encodePacked(
                         block.difficulty,
                         block.timestamp,
-                       totalSupply()
+                        totalSupply()
                     )
                 )
             ) % MAX_Karsier;
     }
-    function setSaleState(uint256 _saleState)   
+
+    function setSaleState(uint256 _saleState) public virtual onlyOwner {
+        saleState = _saleState;
+    }
+
+    function _baseURI() internal view virtual override returns (string memory) {
+        return _baseTokenURI;
+    }
+
+    function setBaseTokenURI(string memory baseTokenURI_)
         public
         virtual
         onlyOwner
     {
-        saleState = _saleState;
-    }
-    function _baseURI() internal view virtual override returns (string memory) {
-        return _baseTokenURI;
-    }
-    function setBaseTokenURI(string memory baseTokenURI_)  
-        public
-        virtual
-        onlyOwner 
-    {
         _baseTokenURI = baseTokenURI_;
     }
-    function setPrice(uint256 _price)   
-        public
-        virtual
-        onlyOwner 
-    {
+
+    function setPrice(uint256 _price) public virtual onlyOwner {
         require(_price > 0, "Zero price");
         price = _price;
     }
 
-    function withdraw() public payable onlyOwner  {
+    function withdraw() public payable onlyOwner {
         require(payable(msg.sender).send(address(this).balance));
     }
+
     function walletOfOwner(address _owner)
         public
         view
@@ -225,6 +216,7 @@ contract Karsier is
         uint256 tokensId = tokenOfOwnerByIndex(_owner, index);
         return tokensId;
     }
+
     function tokenURI(uint256 _tokenId)
         public
         view
@@ -232,8 +224,20 @@ contract Karsier is
         override
         returns (string memory)
     {
-        require(_exists(_tokenId), "ERC721Metadata: URI query for nonexistent token");
+        require(
+            _exists(_tokenId),
+            "ERC721Metadata: URI query for nonexistent token"
+        );
 
-        return bytes(_baseTokenURI).length > 0 ? string(abi.encodePacked(_baseTokenURI, _tokenId.toString(),".json" )): "";
+        return
+            bytes(_baseTokenURI).length > 0
+                ? string(
+                    abi.encodePacked(
+                        _baseTokenURI,
+                        _tokenId.toString(),
+                        ".json"
+                    )
+                )
+                : "";
     }
 }
