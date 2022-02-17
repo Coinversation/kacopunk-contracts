@@ -1,0 +1,28 @@
+{
+  "name": "CryptoBarTW x Alpaca Finance",
+  "description": "This is an exclusive event-based NFT, for attendees of the CryptoBarTW x Alpaca Finance AMA",
+  "image": "https://d257b89266utxb.cloudfront.net/galaxy/images/alpacafinance/1634311596419356794.png",
+  "animation_url": "",
+  "background_color": "",
+  "external_link": "https://galaxy.eco/nft/39642/0xe85d7B8f4c0C13806E158a1c9D7Dcb33140cdc46",
+  "asset_contract": {
+    "address": "0xe85d7B8f4c0C13806E158a1c9D7Dcb33140cdc46",
+    "name": "Alpaca Finance NFT by Project Galaxy",
+    "symbol": "",
+    "image_url": "",
+    "description": "NFTs created by Alpaca Finance. Powered by Project Galaxy.",
+    "external_link": "https://galaxy.eco/alpacafinance"
+  },
+  "owner": "0xBd6D17123Ec731adFf1cE2F9f7Af1aBC26E5EBfd",
+  "attributes": [
+    {
+      "trait_type": "category",
+      "value": "CryptoBarTW x Alpaca Finance"
+    },
+    {
+      "display_type": "date",
+      "trait_type": "birthday",
+      "value": 1635157817
+    }
+  ]
+}

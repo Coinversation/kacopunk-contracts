@@ -4,17 +4,6 @@
  * - npm install images
  * - jpeg images support compression, png not
  */
-
-// 1. kacopunk
-//  1. 合约 - 丽婷
-//  1. 确定稀有款等级与数量，设置全局随机性 - 多多、陈叔、丽婷
-//  2. 设置售价 - 陈叔、丽婷
-//  3. 会员身份，在kaco官网展示头像图片 - 不做
-// 2. 图片合成 - 丽婷 or 小梦
-// 3. JSON结构生成 - 包子，丽婷
-// 4. JSON与图片存储服务在kasier网站上 - 丽婷
-// 5. 联调 - 丽婷、小梦
-// 6. 暂定 倒计时 11月12日早上10点开启销售 - 华子、小梦
 const images = require("images");
 const fs = require("fs");
 const path = require("path");
